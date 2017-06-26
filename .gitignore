@@ -1,0 +1,4 @@
+.idea
+play.php
+web/uploads/
+!web/uploads/.gitkeep
