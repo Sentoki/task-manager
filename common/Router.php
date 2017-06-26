@@ -34,7 +34,7 @@ class Router {
 
     public static function getUrl(string $controller, string $action, array $params = []): string
     {
-        $url = "/index.php?controller={$controller}&action={$action}";
+        $url = "/web/index.php?controller={$controller}&action={$action}";
         foreach ($params as $key => $value) {
             $url .= "&{$key}={$value}";
         }
