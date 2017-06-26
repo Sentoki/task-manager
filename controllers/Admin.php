@@ -17,12 +17,32 @@ class Admin extends Controller {
 
     public function actionTaskList()
     {
-        $tasks = Task::find()->limit(Site::TASKS_PER_PAGE);
+        $tasks = Task::find();
+        $where = [];
+        if (isset($_GET['user_name']) && $_GET['user_name'] != '') {
+            $where['user_name'] = $_GET['user_name'];
+        }
+        if (isset($_GET['email']) && $_GET['email'] != '') {
+            $where['email'] = $_GET['email'];
+        }
+        if (isset($_GET['status']) && $_GET['status'] != 0) {
+            $where['is_complete'] = $_GET['status'] == 1 ? true : false;
+        }
+        if (!empty($where)) {
+            $tasks = $tasks->where($where);
+        }
+
+        $tasks = $tasks->limit(Site::TASKS_PER_PAGE);
         if (isset($_GET['pagination'])) {
             $offset = ((int)$_GET['pagination'] - 1) * Site::TASKS_PER_PAGE;
             $tasks->offset($offset);
         }
-        $tasksNum = Task::find()->count();
+
+        $tasksNum = Task::find();
+        if (!empty($where)) {
+            $tasksNum = $tasksNum->where($where);
+        }
+        $tasksNum = $tasksNum->count();
         $pagination = new Pagination();
         $pagination->setPagesNumber((int)ceil($tasksNum / Site::TASKS_PER_PAGE));
         $pages = $pagination->getPages();
@@ -33,6 +53,7 @@ class Admin extends Controller {
             [
                 'tasks' => $tasks,
                 'pages' => $pages,
+                'pagination' => (int)$_GET['pagination'],
             ]
         );
     }

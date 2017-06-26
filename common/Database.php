@@ -95,7 +95,8 @@ WHERE id=:id";
         if (is_array($model->where)) {
             $temp = [];
             foreach ($model->where as $column => $where) {
-                $temp[] = "{$column}=$where";
+                $temp[] = "{$column}=:{$column}";
+                $bindes[$column] = $where;
             }
             $sql .= ' where ' . implode(' and ', $temp);
         }
@@ -118,8 +119,17 @@ WHERE id=:id";
     {
         $table = $model->tableName();
         $sql = "select count(id) from {$table}";
+        $bindes = [];
+        if (is_array($model->where)) {
+            $temp = [];
+            foreach ($model->where as $column => $where) {
+                $temp[] = "{$column}=:{$column}";
+                $bindes[$column] = $where;
+            }
+            $sql .= ' where ' . implode(' and ', $temp);
+        }
         $stm = $this->pdo->prepare($sql);
-        $stm->execute();
+        $stm->execute($bindes);
         $count = $stm->fetch(PDO::FETCH_ASSOC);
         return $count;
     }
