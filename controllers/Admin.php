@@ -34,6 +34,7 @@ class Admin extends Controller {
      */
     public function actionTaskList()
     {
+        AccessControl::isAuthorized();
         $tasks = Task::find();
         $where = [];
         if (isset($_GET['user_name']) && $_GET['user_name'] != '') {
@@ -80,6 +81,7 @@ class Admin extends Controller {
      */
     public function actionMarkComplete()
     {
+        AccessControl::isAuthorized();
         $taskArray = Task::find()->where(['id' => $_GET['task_id']])->all();
         $taskArray = current($taskArray);
 
@@ -93,6 +95,7 @@ class Admin extends Controller {
 
     public function actionEditTaskText()
     {
+        AccessControl::isAuthorized();
         $taskArray = Task::find()->where(['id' => $_GET['task_id']])->all();
         $taskArray = current($taskArray);
 
