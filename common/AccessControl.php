@@ -14,7 +14,11 @@ class AccessControl {
      * http аутентификация
      */
     public static function isAuthorized(){
-        if (!self::validate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
+        if (
+            !isset($_SERVER['PHP_AUTH_USER']) ||
+            !isset($_SERVER['PHP_AUTH_PW']) ||
+            !self::validate($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])
+        ) {
             http_response_code(401);
             header('WWW-Authenticate: Basic realm="Test task"');
             echo "Требуется указать логин и пароль.";
