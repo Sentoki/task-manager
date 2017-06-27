@@ -5,12 +5,21 @@ namespace app\models;
 
 use app\common\Database;
 
+/**
+ * Общая логика работы с моделями
+ *
+ * Class Model
+ * @package app\models
+ */
 abstract class Model {
     public $offset = null;
     public $limit = null;
     public $where = null;
 
-    abstract function tableName();
+    /**
+     * @return string название таблицы
+     */
+    abstract function tableName() : string;
 
     public function load(array $modelData) : bool
     {

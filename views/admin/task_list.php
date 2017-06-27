@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use app\common\Pagination;
 use app\common\Router;
+use app\common\FileUpload;
 
 ?>
 <div class="container theme-showcase" role="main">
@@ -21,9 +22,14 @@ use app\common\Router;
         <div class="form-group">
             <label for="sel1">Статус: </label>
             <select name="status" class="form-control" id="sel1">
-                <option value="0">Все</option>
-                <option value="1">Завершённые</option>
-                <option value="2">Не завершённые</option>
+                <?php
+                $status_0 = (isset($_GET['status']) && $_GET['status'] == 0) ? ' selected' : '';
+                $status_1 = (isset($_GET['status']) && $_GET['status'] == 1) ? ' selected' : '';
+                $status_2 = (isset($_GET['status']) && $_GET['status'] == 2) ? ' selected' : '';
+                ?>
+                <option value="0"<?=$status_0?>>Все</option>
+                <option value="1"<?=$status_1?>>Не завершённые</option>
+                <option value="2"<?=$status_2?>>Завершённые</option>
             </select>
         </div>
         <input type="hidden" name="controller" value="Admin">
@@ -34,10 +40,11 @@ use app\common\Router;
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>user_id</th>
-            <th>email</th>
-            <th>image_id</th>
-            <th>create_at</th>
+            <th>Имя пользователя</th>
+            <th>Email</th>
+            <th>Изображение</th>
+            <th>Описание</th>
+            <th>Время создания</th>
             <th>Действия</th>
         </tr>
         </thead>
@@ -46,16 +53,19 @@ use app\common\Router;
         <tr>
             <td><?= $task['user_name'] ?></td>
             <td><?= $task['email'] ?></td>
-            <td><?= $task['image_id'] ?></td>
+            <td><img src="/web/uploads/<?= FileUpload::getImageName($task['image_id']) ?>"></td>
+            <td><?= $task['description'] ?></td>
             <td><?= $task['create_at'] ?></td>
             <td>
                 <?php
-                if ($task['is_complete'] == true) {
-                    echo "<p>Задача завершена</p>";
+                if ($task['is_complete'] == 2) {
+                    echo "Задача завершена";
                 } else {
                     ?><a href="<?= Router::getUrl('Admin', 'MarkComplete', ['task_id' => $task['id']]) ?>">Отметить выполненной</a><?php
                 }
                 ?>
+                <br>
+                <a href="<?= Router::getUrl('Admin', 'EditTaskText', ['task_id' => $task['id']]) ?>">Редактировать</a>
             </td>
         </tr>
         <?php } ?>

@@ -6,10 +6,26 @@ namespace app\common;
 use app\models\Model;
 use PDO;
 
+/**
+ * Работа с базой данных
+ *
+ * Class Database
+ * @package app\common
+ */
 class Database {
+    /**
+     * @var Database экземпляр синглетона
+     */
     private static $instance;
+    /**
+     * @var PDO
+     */
     private $pdo;
 
+    /**
+     * Синглетон, конструктор приватный
+     * Database constructor.
+     */
     private function __construct()
     {
         $dsn = 'pgsql:dbname=beejee;host=127.0.0.1';
@@ -18,6 +34,10 @@ class Database {
         $this->pdo = new PDO($dsn, $user, $password);
     }
 
+    /**
+     * Стандартный для синглетона метод
+     * @return Database
+     */
     public static function getInstance() : self
     {
         if (!isset(static::$instance)) {
@@ -26,11 +46,20 @@ class Database {
         return static::$instance;
     }
 
+    /**
+     * Идентификатор созданной записи
+     * @return string
+     */
     public function lastInsertedId()
     {
         return $this->pdo->lastInsertId();
     }
 
+    /**
+     * Вставка в базу данных
+     *
+     * @param Model $model добавляемый в базу объект
+     */
     public function insert(Model $model)
     {
         $properties = get_object_vars($model);
@@ -57,6 +86,11 @@ VALUES
 
     }
 
+    /**
+     * Обновление записи в базе данных
+     *
+     * @param Model $model объект который требуется обновить
+     */
     public function update(Model $model)
     {
         $properties = get_object_vars($model);
@@ -87,6 +121,12 @@ WHERE id=:id";
 
     }
 
+    /**
+     * Извлечение данных из базы
+     *
+     * @param Model $model
+     * @return array
+     */
     public function select(Model $model) : array
     {
         $bindes = [];
@@ -115,6 +155,12 @@ WHERE id=:id";
         return $data;
     }
 
+    /**
+     * Подсчёт количества записей в базе данных
+     *
+     * @param Model $model
+     * @return mixed
+     */
     public function count(Model $model)
     {
         $table = $model->tableName();
@@ -131,6 +177,7 @@ WHERE id=:id";
         $stm = $this->pdo->prepare($sql);
         $stm->execute($bindes);
         $count = $stm->fetch(PDO::FETCH_ASSOC);
+        $errorInfo = $stm->errorInfo();
         return $count;
     }
 }

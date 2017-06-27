@@ -8,13 +8,30 @@ use app\common\Pagination;
 use app\common\Router;
 use app\models\Task;
 
+/**
+ * Контроллер административных страниц
+ *
+ * Class Admin
+ * @package app\controllers
+ */
 class Admin extends Controller {
+
+    /**
+     * Главная страница админки
+     *
+     * @return string
+     */
     public function actionIndex()
     {
         AccessControl::isAuthorized();
         return $this->render('admin/index');
     }
 
+    /**
+     * Страница списка задач
+     *
+     * @return string
+     */
     public function actionTaskList()
     {
         $tasks = Task::find();
@@ -26,7 +43,7 @@ class Admin extends Controller {
             $where['email'] = $_GET['email'];
         }
         if (isset($_GET['status']) && $_GET['status'] != 0) {
-            $where['is_complete'] = $_GET['status'] == 1 ? true : false;
+            $where['is_complete'] = $_GET['status'];
         }
         if (!empty($where)) {
             $tasks = $tasks->where($where);
@@ -53,11 +70,14 @@ class Admin extends Controller {
             [
                 'tasks' => $tasks,
                 'pages' => $pages,
-                'pagination' => (int)$_GET['pagination'],
+                'pagination' => isset($_GET['pagination']) ? (int)$_GET['pagination'] : 1,
             ]
         );
     }
 
+    /**
+     * Контроллер переводящий задачи в статус "выполнено"
+     */
     public function actionMarkComplete()
     {
         $taskArray = Task::find()->where(['id' => $_GET['task_id']])->all();
@@ -66,8 +86,27 @@ class Admin extends Controller {
         $task = new Task();
         $task->load($taskArray);
         /** @var Task $task */
-        $task->is_complete = true;
+        $task->is_complete = 2;
         $task->save();
         $this->redirect(Router::getUrl('Admin', 'TaskList'));
+    }
+
+    public function actionEditTaskText()
+    {
+        $taskArray = Task::find()->where(['id' => $_GET['task_id']])->all();
+        $taskArray = current($taskArray);
+
+        $task = new Task();
+        $task->load($taskArray);
+
+        if (!empty($_POST) && isset($_POST['description'])) {
+            /** @var Task $task */
+            $task->description = $_POST['description'];
+            $task->save();
+            $message = 'Задача была успешно отредактирована';
+        } else {
+            $message = '';
+        }
+        return $this->render('admin/edit_task', ['task' => $task, 'message' => $message]);
     }
 }

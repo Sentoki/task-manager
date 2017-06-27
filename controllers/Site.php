@@ -8,14 +8,30 @@ use app\common\Pagination;
 use app\models\Image;
 use app\models\Task;
 
+/**
+ * Контроллер доступной пользователю части
+ *
+ * Class Site
+ * @package app\controllers
+ */
 class Site extends Controller {
     const TASKS_PER_PAGE = 3;
 
+    /**
+     * Главная страница
+     *
+     * @return string
+     */
     public function actionIndex()
     {
-        return $this->render('site/index', ['some_var' => 123]);
+        return $this->render('site/index', []);
     }
 
+    /**
+     * Создание новой задачи
+     *
+     * @return string
+     */
     public function actionNewTask()
     {
         if (!empty($_POST)) {
@@ -29,30 +45,10 @@ class Site extends Controller {
             $task = new Task();
             $task->load(array_merge($_POST, ['image_id' => $imageId]));
             $task->save();
-
+            $message = 'Задача была успешно добавлена';
+        } else {
+            $message = '';
         }
-        return $this->render('site/new_task', ['some_var' => 123]);
-    }
-
-    public function actionTaskList()
-    {
-        $tasks = Task::find()->limit(self::TASKS_PER_PAGE);
-        if (isset($_GET['pagination'])) {
-            $offset = ((int)$_GET['pagination'] - 1) * self::TASKS_PER_PAGE;
-            $tasks->offset($offset);
-        }
-        $tasksNum = Task::find()->count();
-        $pagination = new Pagination();
-        $pagination->setPagesNumber((int)ceil($tasksNum / self::TASKS_PER_PAGE));
-        $pages = $pagination->getPages();
-
-        $tasks = $tasks->all();
-        return $this->render(
-            'site/task_list',
-            [
-                'tasks' => $tasks,
-                'pages' => $pages,
-            ]
-        );
+        return $this->render('site/new_task', ['message' => $message]);
     }
 }

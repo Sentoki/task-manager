@@ -22,12 +22,12 @@ class Router {
         }
     }
 
-    public function getController() : string
+    public function getController()
     {
         return $this->controller;
     }
 
-    public function getAction() : string
+    public function getAction()
     {
         return $this->action;
     }

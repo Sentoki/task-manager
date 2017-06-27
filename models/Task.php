@@ -3,6 +3,12 @@ declare(strict_types=1);
 
 namespace app\models;
 
+/**
+ * Модель задачи
+ *
+ * Class Task
+ * @package app\models
+ */
 class Task extends Model {
     public $id;
     public $user_name;
@@ -13,7 +19,10 @@ class Task extends Model {
     public $update_at;
     public $is_complete;
 
-    public function tableName()
+    /**
+     * @inheritdoc
+     */
+    public function tableName() : string
     {
         return 'task';
     }

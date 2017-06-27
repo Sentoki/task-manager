@@ -3,6 +3,14 @@ declare(strict_types=1);
 
 namespace app\common;
 
+use app\models\Image;
+
+/**
+ * Работа с загруженными изображениями
+ *
+ * Class FileUpload
+ * @package app\common
+ */
 class FileUpload {
     const FILE_TYPES = [
         'image/png' => '.png',
@@ -10,6 +18,12 @@ class FileUpload {
         'image/gif' => '.gif',
     ];
 
+    /**
+     * Сохранение загруженного изображения
+     *
+     * @return string
+     * @throws \Exception
+     */
     public static function saveFile() : string
     {
         $uploadsDir = __DIR__ . '/../web/uploads/';
@@ -23,6 +37,12 @@ class FileUpload {
         return $filename;
     }
 
+    /**
+     * Изменение размера загруженного изображения при необходимости
+     *
+     * @param $filename
+     * @throws \Exception
+     */
     public static function resizeFile($filename)
     {
         $uploadsDir = __DIR__ . '/../web/uploads/';
@@ -59,5 +79,18 @@ class FileUpload {
                 throw new \Exception('Неожиданный тип изображения');
             }
         }
+    }
+
+    /**
+     * Получение имени изображения по идентификатору изображения
+     *
+     * @param int $image_id pk изображения
+     * @return string имя файла изображения
+     */
+    public static function getImageName(int $image_id) : string
+    {
+        $image = Image::find()->where(['id' => $image_id])->all();
+        $image = current($image);
+        return $image['name'];
     }
 }

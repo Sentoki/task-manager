@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 use app\common\Router;
 ?>
 <div class="container theme-showcase" role="main">
